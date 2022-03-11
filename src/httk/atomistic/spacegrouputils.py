@@ -630,6 +630,14 @@ def trivial_symmetry_reduce(coordgroups,hall_symbol=None):
         multiplicities = [1]*sum([len(x) for x in coordgroups])
 
         return rc_reduced_coordgroups, hall_symbol, wyckoff_symbols, multiplicities
+
+    elif hall_symbol == 'P 1':
+        rc_reduced_coordgroups = coordgroups
+        hall_symbol = 'P 1'
+        wyckoff_symbols = ['a']*sum([len(x) for x in coordgroups])
+        multiplicities = [1]*sum([len(x) for x in coordgroups])
+        return rc_reduced_coordgroups, hall_symbol, wyckoff_symbols, multiplicities
+
     else:
         symopvs=get_symops(hall_symbol)
         rc_reduced_coordgroups, wyckoff_symbols, multiplicities = reduce_by_symops(coordgroups, symopvs, hall_symbol)
