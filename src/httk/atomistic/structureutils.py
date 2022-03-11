@@ -997,8 +997,8 @@ def transform(structure, transformation, max_search_cells=20, max_atoms=5000,pas
     else:
         raise Exception("Very obtuse angles in cell, to search over all possible lattice vectors will take a very long time. To force, set max_search_cells = None when calling find_prototypeid()")
     if pass_sym:
-        hall_symbol=structure.hall_symbol
-        #hall_symbol='P 1'
+        #hall_symbol=structure.hall_symbol
+        hall_symbol='P 1'
         print('using this hall symbol',hall_symbol)
         return structure.create(uc_reduced_coordgroups=extendedcoordgroups, uc_basis=new_cell.basis, assignments=structure.assignments,hall_symbol=hall_symbol)
     else:
