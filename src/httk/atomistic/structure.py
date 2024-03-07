@@ -392,13 +392,17 @@ class Structure(HttkObject):
             other_reps = {}
 
         if (rc_sites is None or rc_cell is None or hall_symbol is None):
-            if hall_symbol is None:
-                new = cls.use(uc_rep)
-                new._other_reps = other_reps
-            else:
-                new = cls.use(uc_rep,hall_symbol=hall_symbol)
-                new._other_reps = other_reps
-
+            transform = get_primitive_to_conventional_basis_transform(uc_rep.uc_basis)
+            newuc = uc_rep.transform(transform)
+            rc_reduced_coordgroups, hall_symbol, wyckoff_symbols, multiplicities = spacegrouputils.trivial_symmetry_reduce(newuc.uc_reduced_coordgroups,
+                                                                                                                           hall_symbol=hall_symbol)
+            new = cls.create(assignments=newuc.assignments, rc_cell=newuc.uc_cell,
+                              rc_reduced_coordgroups=rc_reduced_coordgroups,
+                              wyckoff_symbols=wyckoff_symbols,
+                              multiplicities=multiplicities,
+                              hall_symbol=hall_symbol)
+            
+            new._other_reps = other_reps
         else:
             new = cls(assignments=assignments, rc_sites=rc_sites, rc_cell=rc_cell, other_reps=other_reps)
 
@@ -409,19 +413,19 @@ class Structure(HttkObject):
         return new
 
     @classmethod
-    def use(cls, other, hall_symbol=None):
+    def use(cls, other):
         if isinstance(other, Structure):
             return other
         if isinstance(other, UnitcellStructure):
             transform = get_primitive_to_conventional_basis_transform(other.uc_basis)
             newuc = other.transform(transform)
-            rc_reduced_coordgroups, hall_symbol, wyckoff_symbols, multiplicities = spacegrouputils.trivial_symmetry_reduce(newuc.uc_reduced_coordgroups,hall_symbol=hall_symbol)
+            rc_reduced_coordgroups, hall_symbol, wyckoff_symbols, multiplicities = spacegrouputils.trivial_symmetry_reduce(newuc.uc_reduced_coordgroups)
             return cls.create(assignments=newuc.assignments, rc_cell=newuc.uc_cell,
                               rc_reduced_coordgroups=rc_reduced_coordgroups,
                               wyckoff_symbols=wyckoff_symbols,
                               multiplicities=multiplicities,
                               hall_symbol=hall_symbol)
-            #return cls.create(assignments=other.assignments, rc_cell=other.uc_cell,
+            # return cls.create(assignments=other.assignments, rc_cell=other.uc_cell,
             #                  rc_reduced_coordgroups=other.uc_reduced_coordgroups,
             #                  wyckoff_symbols=['a']*sum([len(x) for x in other.uc_reduced_coordgroups]),
             #                  multiplicities=[1]*sum([len(x) for x in other.uc_reduced_coordgroups]),
